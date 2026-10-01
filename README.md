@@ -66,8 +66,8 @@ flowchart LR
     G3 -- yes --> G4["G4 provenance<br/>clause ID, chapter, date"]
     G4 --> A["Answer + quote + source"]
 
-    classDef ext fill:#fdebd0,stroke:#b9770e;
-    classDef code fill:#d6eaf8,stroke:#1f618d;
+    classDef ext fill:#fdebd0,stroke:#b9770e,color:#1a1a1a;
+    classDef code fill:#d6eaf8,stroke:#1f618d,color:#1a1a1a;
     class RET,LLM ext;
     class G1,G2,G3,G4,REF code;
 ```
