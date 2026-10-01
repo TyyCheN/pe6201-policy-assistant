@@ -1,0 +1,93 @@
+{
+  "source": "Haida Co. Employee Handbook",
+  "version": "October 2026 revision",
+  "language": "English translation of the Chinese original",
+  "documents": [
+    {
+      "file": "D00.md",
+      "title": "Preface and General Provisions",
+      "clauses": 7,
+      "words": 444,
+      "sha256": "bbfbfffc1535c2fd9ff7c8c5027024acc0f153c27cd454f98ab0b3c5419bddc6"
+    },
+    {
+      "file": "D01.md",
+      "title": "Chapter 1 — Onboarding",
+      "clauses": 15,
+      "words": 807,
+      "sha256": "3eaa601d4e749646e36a4d28db221e131c7df5102b45774e3851f9a43bdfab9e"
+    },
+    {
+      "file": "D02.md",
+      "title": "Chapter 2 — Leaving the Company",
+      "clauses": 10,
+      "words": 552,
+      "sha256": "64f198748c3b72d896300d7faf411549bc8c8cde2e47aeb55683ef6fa42ef8aa"
+    },
+    {
+      "file": "D03.md",
+      "title": "Chapter 3 — Employee Discipline",
+      "clauses": 38,
+      "words": 2016,
+      "sha256": "ec3b4309097cd32b7179fe7ee960eafaa91654814d5f1ae3b7abc463a0c0e20b"
+    },
+    {
+      "file": "D04.md",
+      "title": "Chapter 4 — Training",
+      "clauses": 5,
+      "words": 250,
+      "sha256": "b422ce1d03d31a9fc93e528b763447d40d6906b7fc62b04331fbfb28b9cbdbd5"
+    },
+    {
+      "file": "D05.md",
+      "title": "Chapter 5 — Performance Appraisal",
+      "clauses": 7,
+      "words": 381,
+      "sha256": "36129537d17bbb25a5795fea6f9603f9e641c5e05efbc1e2c6112208eaafda05"
+    },
+    {
+      "file": "D06.md",
+      "title": "Chapter 6 — Pay",
+      "clauses": 11,
+      "words": 639,
+      "sha256": "5703ab7fcf26d2998d1409261fe2673b4a33d455a3170ca76ba5d8b1890020b9"
+    },
+    {
+      "file": "D07.md",
+      "title": "Chapter 7 — Leave",
+      "clauses": 38,
+      "words": 2533,
+      "sha256": "57b7c21f23263ecd9b2ce8cfaebcc6d4688d0748e16b71a30784d541c1727c5e"
+    },
+    {
+      "file": "D08.md",
+      "title": "Chapter 8 — Insurance",
+      "clauses": 5,
+      "words": 279,
+      "sha256": "269c5ec934fc13b389d28befff1e1d587c121d76dd847997b68fde8458cc8fd5"
+    },
+    {
+      "file": "D09.md",
+      "title": "Chapter 9 — Rewards and Discipline",
+      "clauses": 27,
+      "words": 1342,
+      "sha256": "9f8fb08f6e5605b6501dfef7a8e288dd174c76f647e62474af347c99455618d9"
+    },
+    {
+      "file": "D10.md",
+      "title": "Chapter 10 — Supplementary Provisions",
+      "clauses": 7,
+      "words": 448,
+      "sha256": "bee7fe1abf8c7b80b7de265eaea3999a215b213993a5d4ce959ae6264588ea38"
+    },
+    {
+      "file": "D11.md",
+      "title": "Acknowledgement of Receipt",
+      "clauses": 5,
+      "words": 137,
+      "sha256": "f8c23af88a613c2239e3d85fb8856dc024a459e79c506994759d4a2164c6f0e3"
+    }
+  ],
+  "total_clauses": 175,
+  "total_words": 9828
+}
