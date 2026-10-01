@@ -1,0 +1,37 @@
+id,answerable,type,question,refused,top1,top3,matched_terms,correct,gold,correct_in_top3
+A01,True,direct,How many days of marriage leave do I get?,False,D07-5.1,D07-5.1 D02-1.3 D02-3.1,days leave marriage,True,D07-5.1,True
+A02,True,paraphrase,"My father just passed away. How much time off can I take, and is it paid?",False,D04-2,D04-2 D07-5.3 D06-2.1,passed time,False,D07-5.2,False
+A03,True,edge,"I joined Haida a year ago, but I have worked for 12 years in total across different employers. How many days of annual leave am I entitled to?",False,D07-2.2,D07-2.2 D07-2.5 D07-6.6,12 annual days employers entitled leave worked year years,True,D07-2.2,True
+A04,True,direct,How much notice do I have to give if I want to resign?,True,,,,False,D02-1.1,False
+A05,True,paraphrase,I'm still on probation and want to quit. How far ahead must I tell the company?,False,D01-4.1,D01-4.1 D02-1.1 D08-1,company probation,False,D02-1.1,True
+A06,True,number,How much is the full-attendance bonus?,False,D06-2.3,D06-2.3 D06-2.4 D03-8.7,attendance bonus full,True,D06-2.3,True
+A07,True,edge,I was 3 minutes late twice this month. Do I lose my full-attendance bonus?,False,D06-2.3,D06-2.3 D03-8.5 D06-2.4,attendance bonus full late minutes month,True,D06-2.3 D03-8.5,True
+A08,True,number,What rate is overtime paid at on a normal weekday evening?,False,D06-1.4,D06-1.4 D03-8.3 D06-1.3,paid rate,False,D03-9.2,False
+A09,True,multi,"If I work on a public holiday, what is the pay rate, and can the company give me time off instead of paying?",False,D03-9.2,D03-9.2 D06-1.2 D07-2.1,company holiday pay public time work,True,D03-9.2,True
+A10,True,number,How long is maternity leave in total?,False,D07-6.1,D07-6.1 D03-8.7 D07-3.3,leave maternity total,True,D07-6.1,True
+A11,True,paraphrase,My wife is about to give birth. How many days off can I take as the father?,False,D07-6.1,D07-6.1 D07-6.6,birth days,False,D07-6.5,False
+A12,True,number,My child is two years old. How many days of childcare leave do I get each year?,False,D07-6.6,D07-6.6 D07-6.7 D07-2.2,child childcare days leave year years,True,D07-6.6,True
+A13,True,direct,Who approves a half-day leave request?,False,D03-8.5,D03-8.5 D07-7.1 D00-P1,day half leave,False,D07-1.2,False
+A14,True,paraphrase,I forgot to clock in this morning. What should I do?,True,,,,False,D03-8.4,False
+A15,True,number,How many days of unauthorised absence count as a serious breach of discipline?,False,D03-8.8,D03-8.8 D09-4.1 D09-5.4,breach days discipline serious,True,D03-8.8 D09-4.2,True
+A16,True,direct,Do I get paid when I take sick leave?,False,D06-2.2,D06-2.2 D06-2.3 D07-2.5,leave paid sick,False,D07-4.2 D07-4.4,False
+A17,True,edge,A colleague has not shown up for three days and cannot be reached. Has he automatically resigned?,False,D02-1.3,D02-1.3 D07-3.3 D09-4.2,automatically days reached,True,D02-1.3 D03-8.8 D09-5.2,True
+A18,True,direct,What score do I need to get an A in the performance appraisal?,False,D05-1,D05-1 D05-2,appraisal performance,False,D05-4,False
+A19,True,paraphrase,I disagree with my appraisal result. How long do I have to ask for a review?,False,D05-3,D05-3 D05-7,appraisal result review,False,D05-7,True
+A20,True,number,How many days per month are used to convert a monthly salary into a daily wage?,False,D06-1.4,D06-1.4 D07-4.2 D06-2.3,daily days month monthly per salary used wage,True,D06-1.4,True
+A21,True,number,What is the maximum amount of personal leave I can take in a year?,False,D07-4.3,D07-4.3 D07-6.4 D07-2.5,leave maximum year,False,D07-3.1,False
+A22,True,multi,"I received a demerit and think it is unfair. How do I appeal, and how quickly will the company reply?",True,,,,False,D09-6.1 D09-6.2,False
+A23,True,edge,Can the company fine me for being late?,False,D03-8.5,D03-8.5 D03-10.2 D06-2.3,fine late,True,D06-3.1 D03-8.5 D09-1.2,True
+A24,True,paraphrase,Can I upload a customer drawing to an AI chatbot to help me analyse it?,True,,,,False,D03-4.2 D03-4.1,False
+U01,False,absent_plausible,How much is the monthly meal allowance?,True,,,,,,
+U02,False,absent_plausible,"Does the company provide a dormitory, and what does it cost?",False,D04-2,D04-2 D04-4 D00-P2,company cost,,,
+U03,False,absent_plausible,Am I allowed to work from home?,False,D03-1.3,D03-1.3,allowed work,,,
+U04,False,absent_plausible,"Is there a company shuttle bus, and what is its route?",True,,,,,,
+U05,False,absent_plausible,How much is the high-temperature allowance in summer?,True,,,,,,
+U06,False,absent_plausible,What is the maximum hotel rate per night I can claim on a business trip?,False,D06-1.4,D06-1.4 D03-8.4 D03-10.2,per rate,,,
+U07,False,out_of_domain,What will the weather be like tomorrow?,True,,,,,,
+U08,False,out_of_domain,Write me a short poem about spring.,True,,,,,,
+U09,False,out_of_domain,What press tonnage do I need to stamp 0.5 mm steel sheet?,True,,,,,,
+U10,False,personal_data,What is Zhang Wei's salary this month?,False,D06-1.4,D06-1.4,month salary,,,
+U11,False,personal_data,How many days of annual leave do I have left this year?,False,D07-2.2,D07-2.2 D07-2.3 D07-2.5,annual days leave year,,,
+U12,False,personal_data,What is the HR manager's mobile number?,False,D01-1.2,D01-1.2,hr number,,,

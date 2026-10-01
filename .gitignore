@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+.cache/
+.ipynb_checkpoints/
+results/smoke/
+.DS_Store
