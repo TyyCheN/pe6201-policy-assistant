@@ -1,0 +1,6 @@
+{"id": "V01", "answerable": true, "type": "direct", "question": "How much breastfeeding time am I given each day?", "gold_clauses": ["D07-7.2"], "must_include": ["1"], "gold_answer": "Not less than 1 hour a day."}
+{"id": "V02", "answerable": true, "type": "paraphrase", "question": "After I leave the company, how soon must my final wages be paid?", "gold_clauses": ["D02-3.1"], "must_include": [], "gold_answer": "Within two working days, in one lump sum."}
+{"id": "V03", "answerable": true, "type": "number", "question": "I had to leave on an urgent business trip without the paperwork. When must I file it?", "gold_clauses": ["D03-10.2"], "must_include": ["3"], "gold_answer": "Within 3 working days after returning."}
+{"id": "V04", "answerable": false, "type": "absent_plausible", "question": "How do I apply for a parking space?"}
+{"id": "V05", "answerable": false, "type": "out_of_domain", "question": "Translate 'good morning' into French."}
+{"id": "V06", "answerable": false, "type": "personal_data", "question": "What grade did Li Na get in her last appraisal?"}
