@@ -9,18 +9,99 @@ cover the question.
 ```
 Q: How many days of marriage leave do I get?
 
-You get 13 days of marriage leave. Statutory public holidays are not counted.
+You are entitled to 13 days of marriage leave after registering your marriage according to law.
 
-  "entitled, under Jiangsu rules, to 13 days of marriage leave"
+  "An employee who registers a marriage according to law is entitled, under Jiangsu rules, to 13 days of marriage leave."
   — Haida Co. Employee Handbook, October 2026 revision — Chapter 7 — Leave, clause D07-5.1
 ```
 
-(Illustrative format. Real outputs are produced by the notebook.)
+(Real output from the evaluation run, question A01.)
 
-## Run it
+**Results on 36 frozen test questions:** accuracy on answerable questions **16/24** (Ctrl-F search: 11/24);
+refusal rate on unanswerable questions **12/12** (Ctrl-F: 6/12); about **$0.00008 per question**.
+
+| Section | Where |
+|---|---|
+| Product: persona, input, output, architecture, metrics | [below](#1-product) |
+| How to run it | [below](#2-run-it) |
+| Data explainer | [`data/README.md`](data/README.md) |
+| Evaluation explainer | [`eval/README.md`](eval/README.md) |
+| Results and where it fails | [below](#5-results) and [`results/summary.md`](results/summary.md) |
+| Code map | [below](#6-code-map) |
+
+## 1. Product
+
+### Persona
+
+**Primary user: an employee of Haida Co.**, a small manufacturing company. They have a question
+about leave, pay, attendance or discipline at the moment it matters ("my father just passed away",
+"I was late twice this month"). They do not know which chapter covers it, they use everyday words
+rather than the handbook's wording, and today they either search a long document or ask the
+Administration & HR Department.
+
+**Secondary: the Administration & HR Department**, which answers the same questions repeatedly and
+needs answers that point to the exact rule.
+
+### Input and output
+
+| | |
+|---|---|
+| **Input** | One question in plain English, as typed by the employee |
+| **Output, when the handbook covers it** | An answer of at most 60 words, the verbatim sentence it relies on, and the clause ID, chapter and document date |
+| **Output, otherwise** | A fixed refusal: "I can't answer that from the Employee Handbook. Please ask the Administration & HR Department." |
+
+### Architecture
+
+```mermaid
+flowchart LR
+    Q["Employee question"] --> RET
+    C[("Frozen corpus<br/>175 handbook clauses")] --> RET
+    RET["Retriever<br/>bge-small embeddings, top 5 clauses"] --> G1{"G1 retrieval gate<br/>best score >= tau?"}
+    G1 -- no --> REF["Refusal<br/>ask Administration & HR"]
+    G1 -- yes --> LLM["LLM: gpt-4o-mini via OpenRouter<br/>sees only the 5 clauses<br/>returns JSON: covered, answer, citations"]
+    LLM --> G2{"G2<br/>covered?"}
+    G2 -- no --> REF
+    G2 -- yes --> G3{"G3 quote check<br/>quote word for word<br/>in a retrieved clause?"}
+    G3 -- no --> REF
+    G3 -- yes --> G4["G4 provenance<br/>clause ID, chapter, date"]
+    G4 --> A["Answer + quote + source"]
+
+    classDef ext fill:#fdebd0,stroke:#b9770e;
+    classDef code fill:#d6eaf8,stroke:#1f618d;
+    class RET,LLM ext;
+    class G1,G2,G3,G4,REF code;
+```
+
+Orange boxes use external intelligence: an open embedding model run locally, and a rented LLM.
+Blue boxes are my own code. Every safety decision (G1, G3, the refusal text, the provenance line)
+is plain code; the model only words the answer and picks the quote. The G1 threshold `tau` is set
+on a separate development set. Evaluation runs the same pipeline over `eval/questions.jsonl` and
+runs a Ctrl-F keyword baseline on the same questions.
+
+This is retrieval-augmented generation, not an agent: the task is one lookup with no tools and no
+multi-step plan.
+
+### Metrics: targeted and reached
+
+| Metric | Target, and where it was set | Reached |
+|---|---|---|
+| Answers that are correct and supported by a cited clause | ≥ 85% (problem statement) | **16 of 17 answers given (94%)** |
+| Accuracy on answerable questions | Beat a Ctrl-F search of the handbook (instructor feedback) | **16/24 (67%)** vs Ctrl-F 11/24 (46%) |
+| Refusal rate on unanswerable questions | Refuse when the handbook does not cover the question (problem statement) | **12/12 (100%)** vs Ctrl-F 6/12 (50%) |
+| Questions about a specific person's data | Always refuse | **3/3 refused** (Ctrl-F answered all 3) |
+| Cost per question | Report it (Class 5) | **$0.00008** on average, $0.00014 per question that reaches the model |
+
+The problem statement set 85% as one number over all questions. Split as the instructor asked, the
+assistant meets it on the answers it gives (94%), but counting every question, it handled 28 of 36
+correctly (16 right answers plus 12 right refusals, 78%). The gap is seven answerable questions it
+refused. See [Results](#5-results).
+
+## 2. Run it
 
 **Colab (recommended).** [Open the notebook in Colab](https://colab.research.google.com/github/TyyCheN/pe6201-policy-assistant/blob/main/notebooks/PE6201_Project_Policy_Assistant.ipynb),
 save an [OpenRouter](https://openrouter.ai) API key as a Colab Secret named `OPENROUTER_API_KEY` (or paste it when asked), and run all cells.
+The notebook clones this repository, checks the corpus freeze, runs the Ctrl-F baseline, the assistant and
+the full evaluation, and writes the files in `results/`. A full run takes a few minutes and costs under one cent.
 
 **Local.**
 
@@ -39,75 +120,99 @@ python scripts/run_eval.py --fake            # smoke test of the whole pipeline 
 python -m pytest tests -q                    # offline tests (pip install pytest)
 ```
 
-## The data
+## 3. Data
 
-| | |
+One document: the Haida Co. Employee Handbook, October 2026 revision. It is the real handbook of a
+small manufacturing company in Jiangsu, China (my family's business), translated from Chinese into
+English and redacted (company name, city names, product line). 12 files, 175 numbered clauses, about
+9,800 words, no personal data. One clause is one retrieval unit. The corpus was committed and hashed
+before any question was written.
+
+Details, file list, preparation steps and how to verify the freeze: [`data/README.md`](data/README.md).
+
+## 4. Evaluation
+
+36 test questions written after the freeze: 24 answerable (direct, paraphrase, number, multi-part,
+edge case) and 12 unanswerable (6 plausible HR questions the handbook does not cover, 3 out of domain,
+3 asking for a person's data). Two scores, reported separately with counts: accuracy on answerable
+questions and refusal rate on unanswerable questions. Answers are checked by code (L1, the headline),
+by a model judge (L2) and by hand. A Ctrl-F keyword search runs on the same questions as the baseline.
+
+Question format, scoring rules, the development set and the output files: [`eval/README.md`](eval/README.md).
+
+## 5. Results
+
+One run with `openai/gpt-4o-mini`, `bge-small-en-v1.5` embeddings, k = 5 and `tau = 0.684` from the
+development set. Full report: [`results/summary.md`](results/summary.md); every question:
+[`results/assistant.csv`](results/assistant.csv). An earlier run with the same model, corpus and questions gave the
+same outcome on all 36 questions (same answers right, same refusals, same citations); only the wording of six answers differed.
+
+| | Assistant | Ctrl-F |
+|---|---|---|
+| Accuracy on answerable questions | **16/24 (67%)** | 11/24 (46%) |
+| Refusal rate on unanswerable questions | **12/12 (100%)** | 6/12 (50%) |
+| Correct when it gives an answer | **16/17 (94%)** | 11/26 (42%) |
+| Answerable: wrongly refused | 7 | 4 |
+| Answerable: answered but wrong | 1 | 9 |
+| Unanswerable: answered anyway | 0 | 6 |
+
+By question type, the gain over Ctrl-F is on paraphrases (3/6 vs 0/6), direct questions (4/5 vs 1/5)
+and personal-data questions (3/3 refused vs 0/3). Retrieval found a gold clause in the top 5 for 23 of 24
+answerable questions.
+
+**Where it fails.** The assistant errs on the side of refusing.
+
+- **G1 refused five answerable questions** (A02, A14, A22, A23, A24). For four of them the right clause
+  had been retrieved, but the top score (0.59 to 0.67) fell below `tau`. Unanswerable questions stopped
+  by G1 scored up to 0.665, so on this test set no threshold separates the two groups cleanly. `tau` was
+  set on six development questions and was not re-tuned on the test set.
+- **G3 refused one correct answer (A09).** The logged reply shows the model answered correctly (300% pay
+  for a public holiday) but "quoted" a shortened sentence that is not in the handbook; the clause says
+  "not less than 150%, 200% and 300% respectively". G3 rejects any quote that is not word for word.
+- **G2 refused one answerable question (A08).** The right clause was retrieved first, but the model did
+  not map "a normal weekday evening" to "extended hours on a working day" and said the clauses did not cover it.
+- **One wrong answer (A13).** Asked who approves a half-day leave, the model treated half a day as
+  "no more than 2 hours" and named the direct supervisor. The handbook sets approval by hours (D07-1.2),
+  so the right answer is the Administration & HR Department. The quote shown with the answer lets a
+  reader catch this.
+- **One retrieval miss (A24).** "AI chatbot" did not match "artificial intelligence services" in D03-4.2.
+
+**L2 judge.** The judge marked 14 of 17 answers correct and disagreed with L1 on A04 and A21; in both
+cases the answer states the right number and clause, and the judge penalised extra or missing detail.
+
+**Cost.** 20 model calls for 36 questions (a G1 refusal costs nothing): on average 368 input and 40
+output tokens per question, $0.00008 per question, $0.0029 for the run, as billed by OpenRouter.
+Judge calls are an evaluation cost and are counted separately (`judge_*` columns).
+
+## 6. Code map
+
+Every module starts with a docstring describing what it does.
+
+| File | Responsibility |
 |---|---|
-| Source | The employee handbook of a real small manufacturing company in Jiangsu, China (my family's business), October 2026 revision. |
-| Size | One handbook: preface, general provisions, 10 chapters and the acknowledgement form. 12 documents, 175 numbered clauses, about 9,800 words. |
-| Language | The original is in Chinese. The corpus is an English translation, checked clause by clause against the original: same clause numbering, and every number in the original present in the translation. |
-| Redaction | The company's registered name is replaced with "Haida Co.". The city names and the description of the company's product line are generalised. Three clauses are affected (D00-P1, D00-G2, D07-4.1). The Chinese original is not in this repository. |
-| Personal data | None. The handbook contains no employee data. |
-| Freeze | The corpus is the first commit and the evaluation questions the second (`git log --reverse`). `data/corpus/MANIFEST.json` records a SHA-256 for every corpus file; `python scripts/freeze_manifest.py --check` fails if any file has changed since that first commit. |
-
-One retrieval unit is one numbered clause, so every citation points to a specific clause such as `D07-5.1`.
-
-## How it works
-
-1. **Retrieve** the 5 clauses most similar to the question (`BAAI/bge-small-en-v1.5` embeddings; TF-IDF fallback when the model cannot be loaded).
-2. **G1, retrieval gate.** If the best clause scores below a threshold, refuse without calling the model. The threshold is set on a separate 6-question dev set (`eval/dev.jsonl`), never on the test questions.
-3. **G2, grounded answer.** The model sees only the retrieved clauses and must return JSON: `covered`, `answer`, and one or two citations with a verbatim `quote`. It is told to set `covered = false` when the clauses do not answer the question or the question is about a specific person's data.
-4. **G3, quote check.** Code verifies that each cited clause was retrieved and that each quote appears word for word in it. If not, the answer is discarded and the assistant refuses.
-5. **G4, provenance.** Every answer is shown with the clause ID, chapter and document date.
-
-This is retrieval-augmented generation with a hosted foundation model. It is not an agent: the task
-is a single lookup with no tools and no multi-step plan, so an agent would add cost and failure modes
-without adding anything the user needs.
-
-## Evaluation
-
-`eval/questions.jsonl` has 36 questions, written after the corpus freeze:
-
-- **24 answerable** (direct, paraphrase, number, multi-part, edge case), each with gold clause IDs, the key number the answer must contain, and a hand-written gold answer.
-- **12 unanswerable**: 6 plausible HR questions the handbook does not cover, 3 out-of-domain, 3 asking for a specific person's data.
-
-Two different scores are reported separately, with counts:
-
-- **Accuracy on answerable questions** = correct / 24. Correct (L1) means: not refused, at least one cited clause is a gold clause, and the answer contains the key number.
-- **Refusal rate on unanswerable questions** = refusals / 12.
-
-An optional **L2 judge** (`--judge`) compares each answer with the gold answer; the report shows where L1 and L2 disagree. `results/assistant.csv` has a blank `hand_label` column for a human check.
-
-### Ctrl-F baseline
-
-`src/policy_assistant/keyword_baseline.py` simulates searching the handbook for the words in the
-question: literal whole-word matching, no synonyms, no model. It answers with the clause containing
-the most (and rarest) query words and refuses when no clause contains at least two of them.
-
-On the same 36 questions: **accuracy 11/24 (46%), refusal rate 6/12 (50%)** (`results/baseline.csv`).
-It finds questions that reuse the handbook's words and misses paraphrases ("My father just passed
-away" does not contain "bereavement"). It answers every personal-data question, because words like
-"salary" and "annual leave" do appear in the handbook.
-
-### Assistant results and cost per question
-
-Produced by the notebook or `scripts/run_eval.py --judge` and written to `results/summary.md`.
-Cost is reported per question from the token usage and price billed by OpenRouter for each call:
-one model call per question, and none when G1 refuses.
-
-## Repository layout
+| `src/policy_assistant/corpus.py` | Load the frozen corpus into `Clause` objects (ID, chapter, section, text, source, date) |
+| `src/policy_assistant/retriever.py` | Embed clauses and questions (`bge-small-en-v1.5`), return the top k by cosine similarity; TF-IDF fallback |
+| `src/policy_assistant/llm.py` | `OpenRouterLLM`, the rented model (JSON output, billed cost per call); `FakeLLM` for offline tests |
+| `src/policy_assistant/assistant.py` | The pipeline and the four guards G1–G4; `format_answer` renders the reply |
+| `src/policy_assistant/keyword_baseline.py` | The Ctrl-F baseline |
+| `src/policy_assistant/evaluate.py` | Threshold calibration on the dev set, L1 and L2 scoring, CSV output, `summary.md` report |
+| `scripts/run_eval.py` | Run the whole evaluation from the command line |
+| `scripts/ask.py` | Ask one question from the command line |
+| `scripts/freeze_manifest.py` | Write or check `data/corpus/MANIFEST.json` |
+| `notebooks/PE6201_Project_Policy_Assistant.ipynb` | End-to-end walk-through, used for the reported run |
+| `tests/test_smoke.py` | Offline tests of the four guards, the corpus freeze and the question set |
 
 ```
-data/corpus/            frozen corpus: D00..D11.md + MANIFEST.json
-eval/                   questions.jsonl (test, 24 + 12) and dev.jsonl (6, for the G1 threshold)
-src/policy_assistant/   corpus, retriever, keyword_baseline, llm, assistant, evaluate
-scripts/                run_eval.py, ask.py, freeze_manifest.py
-notebooks/              the end-to-end notebook
-results/                baseline.csv, plus summary.md and assistant.csv after a real run
-tests/                  offline tests of the four guards and the evaluation set
+data/       corpus (D00..D11.md, MANIFEST.json) and its explainer
+eval/       questions.jsonl (test), dev.jsonl (threshold only) and their explainer
+src/        the assistant
+scripts/    command-line entry points
+notebooks/  the Colab notebook
+results/    summary.md, assistant.csv, baseline.csv
+tests/      offline tests
 ```
 
-## Limitations and responsible use
+## 7. Limitations and responsible use
 
 - The handbook is a revision that takes effect only on formal release (clause D10-2). The assistant shows the document date so a reader can tell which version an answer comes from.
 - The corpus is a translation. In a dispute the Chinese original prevails, and the assistant is not legal advice.
