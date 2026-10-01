@@ -177,8 +177,10 @@ answerable questions.
   reader catch this.
 - **One retrieval miss (A24).** "AI chatbot" did not match "artificial intelligence services" in D03-4.2.
 
-**L2 judge.** The judge marked 14 of 17 answers correct and disagreed with L1 on A04 and A21; in both
-cases the answer states the right number and clause, and the judge penalised extra or missing detail.
+**Hand check.** I read all 17 answers against the handbook (`hand_label` in `results/assistant.csv`):
+16 correct, 1 wrong (A13). The L1 checks agree with my labels on all 17. The L2 judge agrees on 15: it
+never passed a wrong answer (precision 14/14) but failed two correct answers, A04 and A21, for extra or
+missing detail (recall 14/16). The headline accuracy therefore uses L1, and the judge is a second opinion.
 
 **Cost.** 20 model calls for 36 questions (a G1 refusal costs nothing): on average 368 input and 40
 output tokens per question, $0.00008 per question, $0.0029 for the run, as billed by OpenRouter.
