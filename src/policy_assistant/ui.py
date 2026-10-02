@@ -53,12 +53,11 @@ def render_trace(result, tau, clause_text=None):
     clause_text maps clause IDs to their text; when given, the start of each clause is shown."""
     best = result["top_score"]
     clause_text = clause_text or {}
-    lines = ["**Retrieved clauses** (similarity to the question; G1 threshold = %.3f)" % tau, "",
-             "| Clause | Score | Text |", "|---|---|---|"]
+    lines = ["**Retrieved clauses** (similarity to the question; G1 threshold = %.3f)" % tau, ""]
     for cid, score in result["retrieved"]:
         text = clause_text.get(cid, "")
-        text = (text[:90] + "...") if len(text) > 90 else text
-        lines.append(f"| {cid} | {score:.3f} | {text.replace('|', '/')} |")
+        text = (text[:110] + "...") if len(text) > 110 else text
+        lines.append(f"- **{cid}** · {score:.3f} · {text}")
     lines.append("")
     if result["refused"]:
         lines.append(_GATE_TEXT.get(result["gate"], f"**{result['gate']}**"))
