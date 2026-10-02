@@ -49,6 +49,7 @@ needs answers that point to the exact rule.
 | **Input** | One question in plain English, as typed by the employee |
 | **Output, when the handbook covers it** | An answer of at most 60 words, the verbatim sentence it relies on, and the clause ID, chapter and document date |
 | **Output, otherwise** | A fixed refusal: "I can't answer that from the Employee Handbook. Please ask the Administration & HR Department." |
+| **Interface** | A web page: a question box, the answer with its quoted clause, and a folded panel showing the retrieved clauses and which guard decided. Also a command-line script. |
 
 ### Architecture
 
@@ -101,7 +102,8 @@ refused. See [Results](#5-results).
 **Colab (recommended).** [Open the notebook in Colab](https://colab.research.google.com/github/TyyCheN/pe6201-policy-assistant/blob/main/notebooks/PE6201_Project_Policy_Assistant.ipynb),
 save an [OpenRouter](https://openrouter.ai) API key as a Colab Secret named `OPENROUTER_API_KEY` (or paste it when asked), and run all cells.
 The notebook clones this repository, checks the corpus freeze, runs the Ctrl-F baseline, the assistant and
-the full evaluation, and writes the files in `results/`. A full run takes a few minutes and costs under one cent.
+the full evaluation, and writes the files in `results/`. Its last section opens the web page inside the notebook.
+A full run takes a few minutes and costs under one cent.
 
 **Local.**
 
@@ -110,6 +112,7 @@ pip install -r requirements.txt
 export OPENROUTER_API_KEY=sk-or-...
 python scripts/run_eval.py --judge        # full evaluation -> results/summary.md
 python scripts/ask.py "Who approves a half-day leave request?"
+pip install gradio && python scripts/app.py   # web page at http://127.0.0.1:7860
 ```
 
 **No API key, no model download.**
@@ -199,10 +202,12 @@ Every module starts with a docstring describing what it does.
 | `src/policy_assistant/keyword_baseline.py` | The Ctrl-F baseline |
 | `src/policy_assistant/evaluate.py` | Threshold calibration on the dev set, L1 and L2 scoring, CSV output, `summary.md` report |
 | `scripts/run_eval.py` | Run the whole evaluation from the command line |
+| `src/policy_assistant/ui.py` | The web page (Gradio): renders the answer, the quoted clause and the guard trace; no logic of its own |
 | `scripts/ask.py` | Ask one question from the command line |
+| `scripts/app.py` | Open the web page locally |
 | `scripts/freeze_manifest.py` | Write or check `data/corpus/MANIFEST.json` |
 | `notebooks/PE6201_Project_Policy_Assistant.ipynb` | End-to-end walk-through, used for the reported run |
-| `tests/test_smoke.py` | Offline tests of the four guards, the corpus freeze and the question set |
+| `tests/test_smoke.py` | Offline tests of the four guards, the corpus freeze, the question set and the web page rendering |
 
 ```
 data/       corpus (D00..D11.md, MANIFEST.json) and its explainer

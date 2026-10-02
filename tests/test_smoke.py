@@ -76,3 +76,14 @@ def test_baseline_and_report_run():
     rows = ev.run_assistant(PolicyAssistant(RETRIEVER, FakeLLM()), qs)
     text = ev.report(rows, base, {"model": "fake", "backend": "tfidf", "tau": 0.0, "k": 5, "clauses": len(CLAUSES)})
     assert "Accuracy on answerable questions" in text and "/24" in text and "/12" in text
+
+
+def test_web_page_renders_answer_and_refusal():
+    from policy_assistant.ui import render_answer, render_trace
+    clauses = load_corpus()
+    assistant = PolicyAssistant(Retriever(clauses, "tfidf"), FakeLLM(), tau=0.0)
+    answered = assistant.ask("How many days of marriage leave do I get?")
+    assert "D07-5.1" in render_answer(answered) and "G4" in render_trace(answered, 0.0)
+    refused = PolicyAssistant(Retriever(clauses, "tfidf"), FakeLLM(), tau=2.0).ask("What is the weather tomorrow?")
+    assert "No answer from the handbook" in render_answer(refused)
+    assert "G1 retrieval gate" in render_trace(refused, 2.0)
